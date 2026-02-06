@@ -1,7 +1,11 @@
+import { serve } from "bun";
 import { Hono } from "hono";
-import { serveStatic } from "hono/bun";
+import { rateLimiter } from "./middleware/rateLimiter";
+import index from "./index.html";
 
 const app = new Hono();
+
+app.use("/*", rateLimiter());
 
 // API routes
 app.get("/api/hello", (c) => {
@@ -17,10 +21,13 @@ app.get("/api/hello/:name", (c) => {
   return c.json({ message: `Hello, ${name}!` });
 });
 
-// Serve static files (index.html, etc.)
-app.use("/*", serveStatic({ root: "./src" }));
-
-export default {
+const server = serve({
   port: 3000,
-  fetch: app.fetch,
-};
+  routes: {
+    "/api/*": app.fetch,
+    "/*": index,
+  },
+  development: true,
+});
+
+console.log(`Server running at ${server.url}`);
