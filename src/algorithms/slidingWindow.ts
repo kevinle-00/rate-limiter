@@ -1,10 +1,5 @@
 import redis from "../lib/redis";
-
-interface RateLimitResult {
-  allowed: boolean;
-  limit: number;
-  remaining: number;
-}
+import type { RateLimitResult } from "@/types";
 
 export async function checkLimit(
   id: string,
