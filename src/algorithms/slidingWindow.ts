@@ -26,7 +26,7 @@ export async function checkLimit(
     await redis.expire(rateLimitKey, windowSeconds);
   }
 
-  const remaining = Math.max(0, limit - count);
+  const remaining = allowed ? Math.max(0, limit - count - 1) : 0;
 
   return {
     allowed,
