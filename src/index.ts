@@ -1,11 +1,13 @@
 import { serve } from "bun";
 import { Hono } from "hono";
-import { rateLimiter } from "./middleware/rateLimiter";
+import { rateLimiter } from "@/middleware/rateLimiter";
+import configRouter from "@/routes/config";
 import index from "./index.html";
 
 const app = new Hono();
 
 app.use("/*", rateLimiter());
+app.route("/api/config", configRouter);
 
 // API routes
 app.get("/api/hello", (c) => {
@@ -31,3 +33,4 @@ const server = serve({
 });
 
 console.log(`Server running at ${server.url}`);
+

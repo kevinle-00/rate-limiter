@@ -31,10 +31,42 @@ export async function checkLimit(
   }
 
   const remaining = Math.floor(Math.max(0, updatedTokens));
+  // Unlike fixed/sliding window, count represents tokens consumed, not requests made
+  const count = limit - remaining;
 
   return {
     allowed,
     limit,
     remaining,
+    count,
   };
 }
+
+export async function getStatus(
+  id: string,
+  limit: number,
+  windowSeconds: number,
+): Promise<RateLimitResult> {
+  const rateLimitKey = `rate-limit:${id}`;
+  const data = await redis.hgetall(rateLimitKey);
+  const tokens = data.tokens ? Number(data.tokens) : limit;
+  const lastRefill = data.lastRefill ? Number(data.lastRefill) : Date.now();
+
+  const timeElapsed = (Date.now() - lastRefill) / 1000;
+  const refillRate = limit / windowSeconds;
+  const tokensToAdd = timeElapsed * refillRate;
+  const newTokens = Math.min(limit, tokens + tokensToAdd);
+
+  const remaining = Math.floor(Math.max(0, newTokens));
+  const allowed = newTokens >= 1;
+  // Unlike fixed/sliding window, count represents tokens consumed, not requests made
+  const count = limit - remaining;
+
+  return {
+    allowed,
+    limit,
+    remaining,
+    count,
+  };
+}
+

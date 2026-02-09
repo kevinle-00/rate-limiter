@@ -32,5 +32,27 @@ export async function checkLimit(
     allowed,
     limit,
     remaining,
+    count,
+  };
+}
+
+export async function getStatus(
+  id: string,
+  limit: number,
+  windowSeconds: number,
+): Promise<RateLimitResult> {
+  const now = Date.now();
+  const windowStart = now - windowSeconds * 1000;
+  const rateLimitKey = `rate-limit:${id}`;
+  await redis.zremrangebyscore(rateLimitKey, 0, windowStart);
+  const count = await redis.zcard(rateLimitKey);
+  const allowed = count < limit;
+  const remaining = Math.max(0, limit - count);
+
+  return {
+    allowed,
+    limit,
+    remaining,
+    count,
   };
 }

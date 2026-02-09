@@ -21,5 +21,23 @@ export async function checkLimit(
     allowed,
     limit,
     remaining,
+    count,
+  };
+}
+
+export async function getStatus(
+  id: string,
+  limit: number,
+): Promise<RateLimitResult> {
+  const rateLimitKey = `rate-limit:${id}`;
+  const count = Number(await redis.get(rateLimitKey)) || 0;
+  const allowed = count <= limit;
+  const remaining = Math.max(0, limit - count);
+
+  return {
+    allowed,
+    limit,
+    remaining,
+    count,
   };
 }
