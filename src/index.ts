@@ -2,6 +2,7 @@ import { serve } from "bun";
 import { Hono } from "hono";
 import { rateLimiter } from "@/middleware/rateLimiter";
 import configRouter from "@/routes/config";
+import proxyRouter from "@/routes/proxy";
 import index from "./index.html";
 
 const app = new Hono();
@@ -9,19 +10,7 @@ const app = new Hono();
 app.use("/*", rateLimiter());
 app.route("/api/config", configRouter);
 
-// API routes
-app.get("/api/hello", (c) => {
-  return c.json({ message: "Hello, world!", method: "GET" });
-});
-
-app.put("/api/hello", (c) => {
-  return c.json({ message: "Hello, world!", method: "PUT" });
-});
-
-app.get("/api/hello/:name", (c) => {
-  const name = c.req.param("name");
-  return c.json({ message: `Hello, ${name}!` });
-});
+app.route("/api/proxy", proxyRouter);
 
 const server = serve({
   port: 3000,
@@ -33,4 +22,3 @@ const server = serve({
 });
 
 console.log(`Server running at ${server.url}`);
-

@@ -19,6 +19,7 @@ configRouter.put("/", zValidator("json", configSchema), (c) => {
   config.algorithm = body.algorithm;
   config.limit = body.limit;
   config.windowSeconds = body.windowSeconds;
+  config.upstreamURL = body.upstreamURL;
 
   return c.json(config);
 });
