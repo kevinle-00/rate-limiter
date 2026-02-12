@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfigPanel } from "@/components/ConfigPanel";
+import { StatusPanel } from "./components/StatusPanel";
 import "./index.css";
 
 export function App() {
@@ -23,9 +24,7 @@ export function App() {
               <CardTitle>Status</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground text-sm">
-                Current rate limit status per IP will go here.
-              </p>
+              <StatusPanel />
             </CardContent>
           </Card>
 
@@ -46,3 +45,4 @@ export function App() {
 }
 
 export default App;
+
