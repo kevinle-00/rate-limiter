@@ -4,6 +4,8 @@ import { getConnInfo } from "hono/bun";
 import * as fixedWindow from "@/algorithms/fixedWindow";
 import * as slidingWindow from "@/algorithms/slidingWindow";
 import * as tokenBucket from "@/algorithms/tokenBucket";
+import { RequestLog } from "@/RequestLog";
+import type { RequestLogEntry } from "@/types";
 
 const algorithms = { fixedWindow, slidingWindow, tokenBucket };
 
@@ -18,6 +20,15 @@ export const rateLimiter = () =>
     const windowSeconds = config.windowSeconds;
 
     const result = await algo.checkLimit(ip, limit, windowSeconds);
+    const logEntry: RequestLogEntry = {
+      ip,
+      path: c.req.path,
+      method: c.req.method,
+      timestamp: Date.now(),
+      result,
+    };
+    RequestLog.push(logEntry);
+
     if (!result.allowed) {
       return c.json({ error: "Rate limit exceeded" }, 429);
     }

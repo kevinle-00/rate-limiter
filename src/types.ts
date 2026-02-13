@@ -4,3 +4,12 @@ export interface RateLimitResult {
   remaining: number;
   count: number;
 }
+
+export interface RequestLogEntry {
+  ip: string;
+  path: string;
+  method: string;
+  timestamp: number;
+  result: RateLimitResult;
+}
+
