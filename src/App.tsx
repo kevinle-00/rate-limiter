@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfigPanel } from "@/components/ConfigPanel";
 import { StatusPanel } from "./components/StatusPanel";
+import { RequestLogPanel } from "@/components/RequestLogPanel";
 import "./index.css";
 
 export function App() {
@@ -33,9 +34,7 @@ export function App() {
               <CardTitle>Request Log</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground text-sm">
-                Live request feed will go here.
-              </p>
+              <RequestLogPanel />
             </CardContent>
           </Card>
         </div>
@@ -45,4 +44,3 @@ export function App() {
 }
 
 export default App;
-

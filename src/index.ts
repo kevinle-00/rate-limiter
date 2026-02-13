@@ -3,13 +3,14 @@ import { Hono } from "hono";
 import { rateLimiter } from "@/middleware/rateLimiter";
 import configRouter from "@/routes/config";
 import proxyRouter from "@/routes/proxy";
+import logsRouter from "@/routes/logs";
 import index from "./index.html";
 
 const app = new Hono();
 
 app.use("/*", rateLimiter());
 app.route("/api/config", configRouter);
-
+app.route("/api/logs", logsRouter);
 app.route("/api/proxy", proxyRouter);
 
 const server = serve({
