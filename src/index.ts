@@ -8,7 +8,7 @@ import index from "./index.html";
 
 const app = new Hono();
 
-app.use("/*", rateLimiter());
+app.use("/api/proxy/*", rateLimiter());
 app.route("/api/config", configRouter);
 app.route("/api/logs", logsRouter);
 app.route("/api/proxy", proxyRouter);
@@ -23,3 +23,4 @@ const server = serve({
 });
 
 console.log(`Server running at ${server.url}`);
+
