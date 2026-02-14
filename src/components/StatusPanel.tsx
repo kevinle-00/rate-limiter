@@ -13,18 +13,26 @@ interface Status {
 export function StatusPanel() {
   const [ip, setIp] = useState("");
   const [status, setStatus] = useState<Status | null>(null);
-  //TODO: Add error handling
+  const [error, setError] = useState<string | null>(null);
 
   const checkStatus = async () => {
     if (!ip) return;
     try {
+      setError(null);
       const res = await fetch(`/api/config/status/${ip}`, {
         method: "GET",
       });
 
+      if (!res.ok) {
+        setError(`Server error: ${res.status}`);
+        return;
+      }
+
       const data = await res.json();
       setStatus(data);
-    } catch {}
+    } catch {
+      setError("Network error - could not reach server");
+    }
   };
 
   return (
@@ -44,6 +52,8 @@ export function StatusPanel() {
           Check
         </Button>
       </div>
+
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {status && (
         <div className="grid grid-cols-2 gap-3">
