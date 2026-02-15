@@ -21,26 +21,54 @@ export function ConfigPanel() {
     upstreamURL: "https://jsonplaceholder.typicode.com",
   });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  const fetchConfig = async () => {
+    try {
+      const res = await fetch("/api/config", {
+        method: "GET",
+      });
+
+      if (!res.ok) {
+        setError(`Server error: ${res.status}`);
+        return;
+      }
+
+      const data = await res.json();
+      setConfig(data);
+    } catch {
+      setError("Network error - could not reach server");
+      return;
+    }
+  };
   useEffect(() => {
-    fetch("/api/config")
-      .then((res) => res.json())
-      .then((data) => setConfig(data));
+    fetchConfig();
   }, []);
 
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
-    setSaving(true);
+    try {
+      setSaving(true);
+      setError(null);
 
-    const res = await fetch("/api/config", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(config),
-    });
+      const res = await fetch("/api/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config),
+      });
 
-    const data = await res.json();
-    setConfig(data);
-    setSaving(false);
+      if (!res.ok) {
+        setError(`Server error: ${res.status}`);
+        return;
+      }
+
+      const data = await res.json();
+      setConfig(data);
+    } catch {
+      setError("Network error - could not reach server");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -101,6 +129,8 @@ export function ConfigPanel() {
           }
         />
       </div>
+
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       <Button type="submit" disabled={saving}>
         {saving ? "Saving..." : "Save Configuration"}
