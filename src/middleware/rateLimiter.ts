@@ -27,7 +27,11 @@ export const rateLimiter = () =>
       timestamp: Date.now(),
       result,
     };
+
     RequestLog.push(logEntry);
+    if (RequestLog.length > 100) {
+      RequestLog.shift();
+    }
 
     if (!result.allowed) {
       return c.json({ error: "Rate limit exceeded" }, 429);
