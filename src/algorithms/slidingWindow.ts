@@ -27,12 +27,15 @@ export async function checkLimit(
   }
 
   const remaining = allowed ? Math.max(0, limit - count - 1) : 0;
+  const ttl = await redis.ttl(rateLimitKey);
+  const resetIn = ttl > 0 ? ttl : windowSeconds;
 
   return {
     allowed,
     limit,
     remaining,
     count,
+    resetIn,
   };
 }
 
@@ -48,11 +51,14 @@ export async function getStatus(
   const count = await redis.zcard(rateLimitKey);
   const allowed = count < limit;
   const remaining = Math.max(0, limit - count);
+  const ttl = await redis.ttl(rateLimitKey);
+  const resetIn = ttl > 0 ? ttl : windowSeconds;
 
   return {
     allowed,
     limit,
     remaining,
     count,
+    resetIn,
   };
 }

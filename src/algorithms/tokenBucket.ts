@@ -33,12 +33,14 @@ export async function checkLimit(
   const remaining = Math.floor(Math.max(0, updatedTokens));
   // Unlike fixed/sliding window, count represents tokens consumed, not requests made
   const count = limit - remaining;
+  const resetIn = allowed ? Math.ceil((1 - (updatedTokens % 1)) / refillRate) : Math.ceil(1 / refillRate);
 
   return {
     allowed,
     limit,
     remaining,
     count,
+    resetIn,
   };
 }
 
@@ -61,12 +63,14 @@ export async function getStatus(
   const allowed = newTokens >= 1;
   // Unlike fixed/sliding window, count represents tokens consumed, not requests made
   const count = limit - remaining;
+  const resetIn = allowed ? Math.ceil((1 - (newTokens % 1)) / refillRate) : Math.ceil(1 / refillRate);
 
   return {
     allowed,
     limit,
     remaining,
     count,
+    resetIn,
   };
 }
 

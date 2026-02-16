@@ -6,6 +6,7 @@ import * as slidingWindow from "@/algorithms/slidingWindow";
 import * as tokenBucket from "@/algorithms/tokenBucket";
 import { RequestLog } from "@/RequestLog";
 import type { RequestLogEntry } from "@/types";
+import { broadcast } from "@/ws";
 
 const algorithms = { fixedWindow, slidingWindow, tokenBucket };
 
@@ -29,6 +30,7 @@ export const rateLimiter = () =>
     };
 
     RequestLog.push(logEntry);
+    broadcast(logEntry);
     if (RequestLog.length > 100) {
       RequestLog.shift();
     }
@@ -38,4 +40,12 @@ export const rateLimiter = () =>
     }
 
     await next();
+
+    c.header("X-RateLimit-Limit", String(limit));
+    c.header("X-RateLimit-Remaining", String(result.remaining));
+    c.header(
+      "X-RateLimit-Reset",
+      String(Math.ceil(Date.now() / 1000) + result.resetIn),
+    );
   });
+

@@ -16,28 +16,35 @@ export async function checkLimit(
 
   const allowed = count <= limit;
   const remaining = Math.max(0, limit - count);
+  const ttl = await redis.ttl(rateLimitKey);
+  const resetIn = ttl > 0 ? ttl : windowSeconds;
 
   return {
     allowed,
     limit,
     remaining,
     count,
+    resetIn,
   };
 }
 
 export async function getStatus(
   id: string,
   limit: number,
+  windowSeconds: number,
 ): Promise<RateLimitResult> {
   const rateLimitKey = `rate-limit:${id}`;
   const count = Number(await redis.get(rateLimitKey)) || 0;
   const allowed = count <= limit;
   const remaining = Math.max(0, limit - count);
+  const ttl = await redis.ttl(rateLimitKey);
+  const resetIn = ttl > 0 ? ttl : windowSeconds;
 
   return {
     allowed,
     limit,
     remaining,
     count,
+    resetIn,
   };
 }

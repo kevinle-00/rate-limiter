@@ -3,6 +3,7 @@ export interface RateLimitResult {
   limit: number;
   remaining: number;
   count: number;
+  resetIn: number;
 }
 
 export interface RequestLogEntry {
@@ -12,4 +13,3 @@ export interface RequestLogEntry {
   timestamp: number;
   result: RateLimitResult;
 }
-

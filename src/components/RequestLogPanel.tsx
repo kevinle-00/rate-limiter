@@ -18,7 +18,13 @@ export function RequestLogPanel() {
   };
 
   useEffect(() => {
+    const ws = new WebSocket("ws://localhost:3000/ws");
+    ws.onmessage = (event) => {
+      const entry = JSON.parse(event.data);
+      setLogs((prev) => [entry, ...prev]);
+    };
     fetchLogs();
+    return () => ws.close();
   }, []);
 
   if (logs.length === 0) {

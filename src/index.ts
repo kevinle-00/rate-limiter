@@ -5,6 +5,7 @@ import configRouter from "@/routes/config";
 import proxyRouter from "@/routes/proxy";
 import logsRouter from "@/routes/logs";
 import index from "./index.html";
+import { clients } from "@/ws";
 
 const app = new Hono();
 
@@ -19,8 +20,22 @@ const server = serve({
     "/api/*": app.fetch,
     "/*": index,
   },
+  fetch(req, server) {
+    if (new URL(req.url).pathname === "/ws") {
+      server.upgrade(req);
+      return;
+    }
+  },
+  websocket: {
+    open(ws) {
+      clients.add(ws);
+    },
+    message() {},
+    close(ws) {
+      clients.delete(ws);
+    },
+  },
   development: true,
 });
 
 console.log(`Server running at ${server.url}`);
-
