@@ -1,141 +1,137 @@
-import { useEffect, useState, type SubmitEvent } from "react";
+import { type SubmitEvent, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import type { Config } from "@/schemas/config";
 
 type Algorithm = "fixedWindow" | "slidingWindow" | "tokenBucket";
 
 export function ConfigPanel() {
-  const [config, setConfig] = useState<Config>({
-    algorithm: "fixedWindow",
-    limit: 10,
-    windowSeconds: 60,
-    upstreamURL: "https://jsonplaceholder.typicode.com",
-  });
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+	const [config, setConfig] = useState<Config>({
+		algorithm: "fixedWindow",
+		limit: 10,
+		windowSeconds: 60,
+		upstreamURL: "https://jsonplaceholder.typicode.com",
+	});
+	const [saving, setSaving] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
-  const fetchConfig = async () => {
-    try {
-      const res = await fetch("/api/config", {
-        method: "GET",
-      });
+	useEffect(() => {
+		const fetchConfig = async () => {
+			try {
+				const res = await fetch("/api/config");
 
-      if (!res.ok) {
-        setError(`Server error: ${res.status}`);
-        return;
-      }
+				if (!res.ok) {
+					setError(`Server error: ${res.status}`);
+					return;
+				}
 
-      const data = await res.json();
-      setConfig(data);
-    } catch {
-      setError("Network error - could not reach server");
-      return;
-    }
-  };
-  useEffect(() => {
-    fetchConfig();
-  }, []);
+				const data = await res.json();
+				setConfig(data);
+			} catch {
+				setError("Network error - could not reach server");
+			}
+		};
+		fetchConfig();
+	}, []);
 
-  const handleSubmit = async (e: SubmitEvent) => {
-    e.preventDefault();
-    try {
-      setSaving(true);
-      setError(null);
+	const handleSubmit = async (e: SubmitEvent) => {
+		e.preventDefault();
+		try {
+			setSaving(true);
+			setError(null);
 
-      const res = await fetch("/api/config", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config),
-      });
+			const res = await fetch("/api/config", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(config),
+			});
 
-      if (!res.ok) {
-        setError(`Server error: ${res.status}`);
-        return;
-      }
+			if (!res.ok) {
+				setError(`Server error: ${res.status}`);
+				return;
+			}
 
-      const data = await res.json();
-      setConfig(data);
-    } catch {
-      setError("Network error - could not reach server");
-    } finally {
-      setSaving(false);
-    }
-  };
+			const data = await res.json();
+			setConfig(data);
+		} catch {
+			setError("Network error - could not reach server");
+		} finally {
+			setSaving(false);
+		}
+	};
 
-  return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="algorithm">Algorithm</Label>
-        <Select
-          value={config.algorithm}
-          onValueChange={(value: Algorithm) =>
-            setConfig({ ...config, algorithm: value })
-          }
-        >
-          <SelectTrigger id="algorithm" className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="fixedWindow">Fixed Window</SelectItem>
-            <SelectItem value="slidingWindow">Sliding Window</SelectItem>
-            <SelectItem value="tokenBucket">Token Bucket</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+	return (
+		<form onSubmit={handleSubmit} className="flex flex-col gap-4">
+			<div className="flex flex-col gap-2">
+				<Label htmlFor="algorithm">Algorithm</Label>
+				<Select
+					value={config.algorithm}
+					onValueChange={(value: Algorithm) =>
+						setConfig({ ...config, algorithm: value })
+					}
+				>
+					<SelectTrigger id="algorithm" className="w-full">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="fixedWindow">Fixed Window</SelectItem>
+						<SelectItem value="slidingWindow">Sliding Window</SelectItem>
+						<SelectItem value="tokenBucket">Token Bucket</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="limit">Request Limit</Label>
-        <Input
-          id="limit"
-          type="number"
-          min={1}
-          value={config.limit}
-          onChange={(e) =>
-            setConfig({ ...config, limit: Number(e.target.value) })
-          }
-        />
-      </div>
+			<div className="flex flex-col gap-2">
+				<Label htmlFor="limit">Request Limit</Label>
+				<Input
+					id="limit"
+					type="number"
+					min={1}
+					value={config.limit}
+					onChange={(e) =>
+						setConfig({ ...config, limit: Number(e.target.value) })
+					}
+				/>
+			</div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="windowSeconds">Window (seconds)</Label>
-        <Input
-          id="windowSeconds"
-          type="number"
-          min={1}
-          value={config.windowSeconds}
-          onChange={(e) =>
-            setConfig({ ...config, windowSeconds: Number(e.target.value) })
-          }
-        />
-      </div>
+			<div className="flex flex-col gap-2">
+				<Label htmlFor="windowSeconds">Window (seconds)</Label>
+				<Input
+					id="windowSeconds"
+					type="number"
+					min={1}
+					value={config.windowSeconds}
+					onChange={(e) =>
+						setConfig({ ...config, windowSeconds: Number(e.target.value) })
+					}
+				/>
+			</div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="upstreamURL">Upstream URL</Label>
-        <Input
-          id="upstreamURL"
-          type="url"
-          value={config.upstreamURL}
-          onChange={(e) =>
-            setConfig({ ...config, upstreamURL: e.target.value })
-          }
-        />
-      </div>
+			<div className="flex flex-col gap-2">
+				<Label htmlFor="upstreamURL">Upstream URL</Label>
+				<Input
+					id="upstreamURL"
+					type="url"
+					value={config.upstreamURL}
+					onChange={(e) =>
+						setConfig({ ...config, upstreamURL: e.target.value })
+					}
+				/>
+			</div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+			{error && <p className="text-sm text-destructive">{error}</p>}
 
-      <Button type="submit" disabled={saving}>
-        {saving ? "Saving..." : "Save Configuration"}
-      </Button>
-    </form>
-  );
+			<Button type="submit" disabled={saving}>
+				{saving ? "Saving..." : "Save Configuration"}
+			</Button>
+		</form>
+	);
 }
-
