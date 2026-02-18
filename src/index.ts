@@ -5,7 +5,7 @@ import configRouter from "@/routes/config";
 import proxyRouter from "@/routes/proxy";
 import logsRouter from "@/routes/logs";
 import index from "./index.html";
-import { clients } from "@/ws";
+import { clients } from "@/lib/ws";
 
 const app = new Hono();
 

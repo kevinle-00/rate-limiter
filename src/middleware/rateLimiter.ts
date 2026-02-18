@@ -4,9 +4,9 @@ import { getConnInfo } from "hono/bun";
 import * as fixedWindow from "@/algorithms/fixedWindow";
 import * as slidingWindow from "@/algorithms/slidingWindow";
 import * as tokenBucket from "@/algorithms/tokenBucket";
-import { RequestLog } from "@/RequestLog";
+import { requestLog } from "@/requestLog";
 import type { RequestLogEntry } from "@/types";
-import { broadcast } from "@/ws";
+import { broadcast } from "@/lib/ws";
 
 const algorithms = { fixedWindow, slidingWindow, tokenBucket };
 
@@ -29,10 +29,10 @@ export const rateLimiter = () =>
       result,
     };
 
-    RequestLog.push(logEntry);
+    requestLog.push(logEntry);
     broadcast(logEntry);
-    if (RequestLog.length > 100) {
-      RequestLog.shift();
+    if (requestLog.length > 100) {
+      requestLog.shift();
     }
 
     if (!result.allowed) {
@@ -48,4 +48,3 @@ export const rateLimiter = () =>
       String(Math.ceil(Date.now() / 1000) + result.resetIn),
     );
   });
-
