@@ -17,7 +17,7 @@ RUN bun run build
 FROM base
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
-COPY package.json bun.lock bunfig.toml ./
+COPY package.json bun.lock bunfig.toml tsconfig.json ./
 COPY src ./src
 COPY styles ./styles
 
