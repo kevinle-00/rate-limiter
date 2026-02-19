@@ -15,7 +15,7 @@ app.route("/api/logs", logsRouter);
 app.route("/api/proxy", proxyRouter);
 
 const server = serve({
-	port: 3000,
+	port: Number(process.env.PORT) || 3000,
 	routes: {
 		"/api/*": app.fetch,
 		"/*": index,
