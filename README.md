@@ -35,6 +35,7 @@ flowchart LR
 - **Frontend:** React, Tailwind CSS, shadcn/ui
 - **Data Store:** Redis ([ioredis](https://github.com/redis/ioredis))
 - **Validation:** Zod
+- **Load Testing:** [k6](https://k6.io) (Grafana)
 - **CI:** GitHub Actions (type checking, linting, tests)
 - **CD:** Railway with Docker
 
@@ -79,6 +80,17 @@ Open [http://localhost:3000](http://localhost:3000).
 bun test
 ```
 
+### Load Testing
+
+Requires [k6](https://grafana.com/docs/k6/latest/set-up/install-k6/) to be installed.
+
+```bash
+bun run loadtest:smoke
+bun run loadtest
+bun run loadtest:stress
+bun run loadtest:compare
+```
+
 ### Lint & Type Check
 
 ```bash
@@ -112,6 +124,12 @@ src/
 ├── config.ts            # Runtime configuration state
 ├── types.ts             # Shared TypeScript types
 └── index.ts             # Server entry point
+
+loadtest/
+├── smoke.js             # Sanity check
+├── load.js              # Ramp to 500 concurrent VUs
+├── stress.js            # Push to 1000 req/s arrival rate
+└── compare-algorithms.sh # Run load test across all 3 algorithms
 ```
 
 ## Deployment
@@ -121,3 +139,4 @@ The app is deployed on [Railway](https://railway.com) using Docker.
 - **CI:** GitHub Actions runs type checking, linting, and tests on every push
 - **CD:** Railway auto-deploys from `main` after CI passes (Wait for CI enabled)
 - **Redis:** Railway Redis add-on, connected via `REDIS_URL` environment variable
+

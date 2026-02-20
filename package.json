@@ -8,7 +8,11 @@
     "start": "NODE_ENV=production bun src/index.ts",
     "build": "bun run build.ts",
     "lint": "bunx biome check src/",
-    "test": "bun test"
+    "test": "bun test",
+    "loadtest": "k6 run loadtest/load.js",
+    "loadtest:smoke": "k6 run loadtest/smoke.js",
+    "loadtest:stress": "k6 run loadtest/stress.js",
+    "loadtest:compare": "./loadtest/compare-algorithms.sh"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.6",
