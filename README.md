@@ -4,7 +4,7 @@ A rate-limiting reverse proxy with a real-time dashboard. Requests are proxied t
 
 **[Live Demo](https://rate-limiter-production-da6e.up.railway.app/)**
 
-![Dashboard Screenshot](docs/dashboard-screenshot.png)
+https://github.com/user-attachments/assets/f40769e2-d5c6-413d-9bb7-d4c251d0ad59
 
 ## Architecture
 
@@ -139,4 +139,3 @@ The app is deployed on [Railway](https://railway.com) using Docker.
 - **CI:** GitHub Actions runs type checking, linting, and tests on every push
 - **CD:** Railway auto-deploys from `main` after CI passes (Wait for CI enabled)
 - **Redis:** Railway Redis add-on, connected via `REDIS_URL` environment variable
-

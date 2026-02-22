@@ -115,8 +115,7 @@ export function ConfigPanel() {
 					onChange={(e) =>
 						setConfig({
 							...config,
-							windowSeconds:
-								e.target.value === "" ? 0 : Number(e.target.value),
+							windowSeconds: e.target.value === "" ? 0 : Number(e.target.value),
 						})
 					}
 				/>
