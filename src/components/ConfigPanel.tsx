@@ -95,9 +95,12 @@ export function ConfigPanel() {
 					id="limit"
 					type="number"
 					min={1}
-					value={config.limit}
+					value={config.limit || ""}
 					onChange={(e) =>
-						setConfig({ ...config, limit: Number(e.target.value) })
+						setConfig({
+							...config,
+							limit: e.target.value === "" ? 0 : Number(e.target.value),
+						})
 					}
 				/>
 			</div>
@@ -108,9 +111,13 @@ export function ConfigPanel() {
 					id="windowSeconds"
 					type="number"
 					min={1}
-					value={config.windowSeconds}
+					value={config.windowSeconds || ""}
 					onChange={(e) =>
-						setConfig({ ...config, windowSeconds: Number(e.target.value) })
+						setConfig({
+							...config,
+							windowSeconds:
+								e.target.value === "" ? 0 : Number(e.target.value),
+						})
 					}
 				/>
 			</div>
