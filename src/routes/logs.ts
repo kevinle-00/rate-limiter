@@ -1,10 +1,11 @@
 import { Hono } from "hono";
-import { requestLog } from "@/requestLog";
+import { getLogEntries } from "@/requestLog";
 
 const logsRouter = new Hono();
 
 logsRouter.get("/", async (c) => {
-	return c.json([...requestLog].reverse());
+	const logs = await getLogEntries();
+	return c.json(logs);
 });
 
 export default logsRouter;

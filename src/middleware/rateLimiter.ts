@@ -5,7 +5,7 @@ import * as slidingWindow from "@/algorithms/slidingWindow";
 import * as tokenBucket from "@/algorithms/tokenBucket";
 import { getConfig } from "@/config";
 import { broadcast } from "@/lib/ws";
-import { requestLog } from "@/requestLog";
+import { pushLogEntry } from "@/requestLog";
 import type { RequestLogEntry } from "@/types";
 
 const algorithms = { fixedWindow, slidingWindow, tokenBucket };
@@ -30,11 +30,8 @@ export const rateLimiter = () =>
 			result,
 		};
 
-		requestLog.push(logEntry);
+		await pushLogEntry(logEntry);
 		broadcast(logEntry);
-		if (requestLog.length > 100) {
-			requestLog.shift();
-		}
 
 		if (!result.allowed) {
 			return c.json({ error: "Rate limit exceeded" }, 429);
