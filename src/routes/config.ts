@@ -4,6 +4,7 @@ import * as fixedWindow from "@/algorithms/fixedWindow";
 import * as slidingWindow from "@/algorithms/slidingWindow";
 import * as tokenBucket from "@/algorithms/tokenBucket";
 import { getConfig, setConfig } from "@/config";
+import redis from "@/lib/redis";
 import { configSchema } from "@/schemas/config";
 
 const algorithms = { fixedWindow, slidingWindow, tokenBucket };
@@ -16,6 +17,15 @@ configRouter.get("/", async (c) => {
 
 configRouter.put("/", zValidator("json", configSchema), async (c) => {
 	const body = c.req.valid("json");
+	const current = await getConfig();
+
+	if (body.algorithm !== current.algorithm) {
+		const keys = await redis.keys("rate-limit:*");
+		if (keys.length > 0) {
+			await redis.del(...keys);
+		}
+	}
+
 	const config = await setConfig(body);
 	return c.json(config);
 });
