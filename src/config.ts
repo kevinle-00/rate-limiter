@@ -1,5 +1,5 @@
-import type { Config } from "@/schemas/config";
 import redis from "@/lib/redis";
+import type { Config } from "@/schemas/config";
 
 const REDIS_KEY = "config";
 
@@ -18,10 +18,10 @@ export async function getConfig(): Promise<Config> {
 	}
 
 	return {
-		algorithm: data.algorithm as Config["algorithm"],
-		limit: Number(data.limit),
-		windowSeconds: Number(data.windowSeconds),
-		upstreamURL: data.upstreamURL,
+		algorithm: (data.algorithm as Config["algorithm"]) ?? defaults.algorithm,
+		limit: Number(data.limit) || defaults.limit,
+		windowSeconds: Number(data.windowSeconds) || defaults.windowSeconds,
+		upstreamURL: data.upstreamURL ?? defaults.upstreamURL,
 	};
 }
 

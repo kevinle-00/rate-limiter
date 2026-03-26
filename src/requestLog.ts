@@ -1,5 +1,5 @@
-import type { RequestLogEntry } from "./types";
 import redis from "./lib/redis";
+import type { RequestLogEntry } from "./types";
 
 const REDIS_KEY = "request-log";
 const MAX_ENTRIES = 100;

@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it } from "bun:test";
 import { Hono } from "hono";
-import { rateLimiter } from "@/middleware/rateLimiter";
 import redis from "@/lib/redis";
+import { rateLimiter } from "@/middleware/rateLimiter";
 import configRouter from "./config";
 import proxyRouter from "./proxy";
 

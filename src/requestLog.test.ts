@@ -33,8 +33,8 @@ describe("Request Log", () => {
 
 		const entries = await getLogEntries();
 		expect(entries).toHaveLength(2);
-		expect(entries[0].ip).toBe("1.0.0.2");
-		expect(entries[1].ip).toBe("1.0.0.1");
+		expect(entries[0]?.ip).toBe("1.0.0.2");
+		expect(entries[1]?.ip).toBe("1.0.0.1");
 	});
 
 	it("should cap at 100 entries", async () => {

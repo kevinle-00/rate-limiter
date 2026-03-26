@@ -1,6 +1,6 @@
 import { afterAll, beforeEach, describe, expect, it } from "bun:test";
-import redis from "./lib/redis";
 import { getConfig, setConfig } from "./config";
+import redis from "./lib/redis";
 
 const REDIS_KEY = "config";
 
