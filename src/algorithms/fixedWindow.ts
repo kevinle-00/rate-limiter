@@ -1,6 +1,19 @@
 import type { RateLimitResult } from "@/types";
 import redis from "../lib/redis";
 
+const checkLimitScript = `
+local key = KEYS[1]
+local windowSeconds = tonumber(ARGV[1])
+
+local count = redis.call('INCR', key)
+if count == 1 then
+  redis.call('EXPIRE', key, windowSeconds)
+end
+
+local ttl = redis.call('TTL', key)
+return {count, ttl}
+`;
+
 export async function checkLimit(
 	id: string,
 	limit: number,
@@ -8,24 +21,18 @@ export async function checkLimit(
 ): Promise<RateLimitResult> {
 	const rateLimitKey = `rate-limit:${id}`;
 
-	const count = await redis.incr(rateLimitKey);
-
-	if (count === 1) {
-		await redis.expire(rateLimitKey, windowSeconds);
-	}
+	const [count, ttl] = (await redis.eval(
+		checkLimitScript,
+		1,
+		rateLimitKey,
+		windowSeconds,
+	)) as [number, number];
 
 	const allowed = count <= limit;
 	const remaining = Math.max(0, limit - count);
-	const ttl = await redis.ttl(rateLimitKey);
 	const resetIn = ttl > 0 ? ttl : windowSeconds;
 
-	return {
-		allowed,
-		limit,
-		remaining,
-		count,
-		resetIn,
-	};
+	return { allowed, limit, remaining, count, resetIn };
 }
 
 export async function getStatus(
@@ -40,11 +47,5 @@ export async function getStatus(
 	const ttl = await redis.ttl(rateLimitKey);
 	const resetIn = ttl > 0 ? ttl : windowSeconds;
 
-	return {
-		allowed,
-		limit,
-		remaining,
-		count,
-		resetIn,
-	};
+	return { allowed, limit, remaining, count, resetIn };
 }
