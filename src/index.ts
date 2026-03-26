@@ -1,6 +1,6 @@
 import { serve } from "bun";
 import { Hono } from "hono";
-import { clients } from "@/lib/ws";
+import { clients, subscribeToRequestEvents } from "@/lib/ws";
 import { rateLimiter } from "@/middleware/rateLimiter";
 import configRouter from "@/routes/config";
 import logsRouter from "@/routes/logs";
@@ -38,4 +38,5 @@ const server = serve({
 	development: process.env.NODE_ENV !== "production",
 });
 
+subscribeToRequestEvents();
 console.log(`Server running at ${server.url}`);

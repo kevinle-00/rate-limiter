@@ -4,7 +4,7 @@ import * as fixedWindow from "@/algorithms/fixedWindow";
 import * as slidingWindow from "@/algorithms/slidingWindow";
 import * as tokenBucket from "@/algorithms/tokenBucket";
 import { getConfig } from "@/config";
-import { broadcast } from "@/lib/ws";
+import { publish } from "@/lib/ws";
 import { pushLogEntry } from "@/requestLog";
 import type { RequestLogEntry } from "@/types";
 
@@ -31,7 +31,7 @@ export const rateLimiter = () =>
 		};
 
 		await pushLogEntry(logEntry);
-		broadcast(logEntry);
+		publish(logEntry);
 
 		if (!result.allowed) {
 			return c.json({ error: "Rate limit exceeded" }, 429);
