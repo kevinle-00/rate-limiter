@@ -3,7 +3,7 @@ import { createMiddleware } from "hono/factory";
 import * as fixedWindow from "@/algorithms/fixedWindow";
 import * as slidingWindow from "@/algorithms/slidingWindow";
 import * as tokenBucket from "@/algorithms/tokenBucket";
-import { config } from "@/config";
+import { getConfig } from "@/config";
 import { broadcast } from "@/lib/ws";
 import { requestLog } from "@/requestLog";
 import type { RequestLogEntry } from "@/types";
@@ -16,6 +16,7 @@ export const rateLimiter = () =>
 			c.req.header("x-forwarded-for") ??
 			getConnInfo(c).remote.address ??
 			"unknown";
+		const config = await getConfig();
 		const algo = algorithms[config.algorithm];
 		const limit = config.limit;
 		const windowSeconds = config.windowSeconds;

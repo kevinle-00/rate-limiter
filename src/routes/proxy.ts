@@ -1,10 +1,11 @@
 import { Hono } from "hono";
-import { config } from "@/config";
+import { getConfig } from "@/config";
 
 const proxyRouter = new Hono();
 
 proxyRouter.all("/*", async (c) => {
 	try {
+		const config = await getConfig();
 		const upstream = config.upstreamURL;
 		const path = c.req.path.replace("/api/proxy", "");
 		const url = `${upstream}${path}`;
